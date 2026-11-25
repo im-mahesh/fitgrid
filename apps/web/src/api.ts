@@ -10,6 +10,9 @@ export type DocumentDetail = Schemas['DocumentDetail']
 export type Line = Schemas['Line']
 export type Requirement = Schemas['Requirement']
 export type RequirementsResponse = Schemas['RequirementsResponse']
+export type Match = Schemas['Match']
+export type MatchResponse = Schemas['MatchResponse']
+export type Verdict = Match['verdict']
 
 /** What the user gave us: exactly one of a file or pasted text, plus an optional job title. */
 export interface DocumentInput {
@@ -81,5 +84,11 @@ export const getRequirements = (jobId: string) =>
 /** Calls Claude (billed) unless a stored result exists. */
 export const extractRequirements = (jobId: string) =>
   request<RequirementsResponse>(`/jobs/${jobId}/requirements`, { method: 'POST' })
+
+export const getMatch = (jobId: string) => request<MatchResponse>(`/jobs/${jobId}/match`)
+
+/** Sends the resume to Claude (billed) unless a stored result exists. */
+export const runMatch = (jobId: string) =>
+  request<MatchResponse>(`/jobs/${jobId}/match`, { method: 'POST' })
 
 export const deleteAllDocuments = () => request<void>('/documents', { method: 'DELETE' })

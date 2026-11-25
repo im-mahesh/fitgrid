@@ -1,0 +1,65 @@
+.item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+  width: 100%;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 0.875rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.item:hover,
+.item[aria-pressed='true'] {
+  border-color: var(--accent);
+  background: var(--highlight);
+}
+
+.badge {
+  flex: none;
+  min-width: 5.5rem;
+  padding: 0.05rem 0.4rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.met {
+  color: var(--good);
+}
+
+.partial {
+  color: var(--warn);
+}
+
+.not_found {
+  color: var(--bad);
+}
+
+.not_assessed {
+  color: var(--muted);
+}
+
+.text {
+  flex: 1;
+  min-width: 10rem;
+}
+
+.meta {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.reason {
+  margin: 0.25rem 0 0.5rem;
+  padding-left: 0.6rem;
+  border-left: 3px solid var(--accent);
+  font-size: 0.8125rem;
+}

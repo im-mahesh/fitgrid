@@ -6,6 +6,7 @@
   --accent: #4f46e5;
   --highlight: rgba(79, 70, 229, 0.12);
   --good: #1a7f37;
+  --warn: #9a6700;
   --bad: #cf222e;
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   color: var(--text);
@@ -21,6 +22,7 @@
     --accent: #6366f1;
     --highlight: rgba(99, 102, 241, 0.22);
     --good: #3fb950;
+    --warn: #d29922;
     --bad: #ff7b72;
   }
 }

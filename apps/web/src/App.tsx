@@ -91,14 +91,18 @@ export default function App() {
 
           <p className={styles.note}>
             Documents are stored in this app&apos;s database. A job post is sent to Anthropic when you
-            extract its requirements. Your resume isn&apos;t sent anywhere yet.
+            extract its requirements, and your resume only when you compare it with a job.
           </p>
           <HealthStatus />
         </div>
 
         <main className={styles.preview}>
           {selected?.kind === 'job' ? (
-            <JobView key={selected.id} jobId={selected.id} />
+            <JobView
+              key={`${selected.id}:${resume?.id}`}
+              jobId={selected.id}
+              resumeId={resume?.id}
+            />
           ) : selected ? (
             <LinesPreview key={selected.id} documentId={selected.id} />
           ) : (

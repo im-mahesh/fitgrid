@@ -92,6 +92,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/jobs/{job_id}/match": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Match */
+        get: operations["read_match_api_jobs__job_id__match_get"];
+        put?: never;
+        /** Match Job */
+        post: operations["match_job_api_jobs__job_id__match_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/health": {
         parameters: {
             query?: never;
@@ -214,6 +232,32 @@ export interface components {
             section?: string | null;
             /** Text */
             text: string;
+        };
+        /** Match */
+        Match: {
+            /** Position */
+            position: number;
+            /**
+             * Verdict
+             * @enum {string}
+             */
+            verdict: "met" | "partial" | "not_found" | "not_assessed";
+            /** Reason */
+            reason: string;
+            /** Line Numbers */
+            line_numbers: number[];
+        };
+        /** MatchResponse */
+        MatchResponse: {
+            /** Matched */
+            matched: boolean;
+            /** Model */
+            model?: string | null;
+            /**
+             * Results
+             * @default []
+             */
+            results: components["schemas"]["Match"][];
         };
         /** Requirement */
         Requirement: {
@@ -481,6 +525,68 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RequirementsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_match_api_jobs__job_id__match_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MatchResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    match_job_api_jobs__job_id__match_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MatchResponse"];
                 };
             };
             /** @description Validation Error */
