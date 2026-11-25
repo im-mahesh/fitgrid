@@ -2,7 +2,7 @@
 
 See what your resume proves for each job, requirement by requirement.
 
-> Status: you can add a resume and up to five job posts (PDF, TXT, MD or pasted text), see how each was read, line by line, extract each job's requirements with Claude, and compare your resume with them: met, partial or not found, with the resume lines behind each verdict.
+> Status: you can add a resume and up to five job posts (PDF, TXT, MD or pasted text), see how each was read, line by line, extract each job's requirements with Claude, and compare your resume with them: met, partial or not found, with the resume lines behind each verdict. The fit grid shows every job side by side.
 
 ## Run with Docker
 

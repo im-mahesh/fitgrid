@@ -26,6 +26,10 @@ _Your answer. Why structured output, why require a cited line, what does that ch
 
 _Your answer. Why three verdicts and no score, what happens to a claim with no cited line, what that check cannot catch, and what personal data is sent._
 
+## Why one column per job instead of a merged table?
+
+_Your answer. What would merging requirements cost, and what could go wrong?_
+
 ## Why no orchestration framework?
 
 _Your answer. What would make you adopt one?_

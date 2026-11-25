@@ -2,7 +2,7 @@
 
 Career assistant: one resume against up to five job posts. For every job requirement it shows whether the resume proves it (**met**, **partial**, **not found**), citing resume line numbers, plus a chat about fit and interview preparation.
 
-**Built so far:** upload or paste one resume and up to five jobs, parse them into numbered lines, store them in Postgres, preview and delete them; extract each job's requirements with Claude, and judge the resume against them. No grid across jobs, eval or chat yet. Update this line in the same change that adds a feature, and delete anything here that stops being true.
+**Built so far:** upload or paste one resume and up to five jobs, parse them into numbered lines, store them in Postgres, preview and delete them; extract each job's requirements with Claude, judge the resume against them, and compare all jobs in the fit grid. No eval, chat or debug page yet. Update this line in the same change that adds a feature, and delete anything here that stops being true.
 
 ## Layout
 
@@ -19,6 +19,7 @@ apps/api/app/
   matching.py    match prompt, contact redaction and verdict checks
   matches.py     match routes
   call_log.py    writes the llm_calls row
+  overview.py    GET /api/overview for the grid (reads only, never calls the model)
   db.py          connections, schema.sql, health check
 apps/web/src/    App.tsx, api.ts, useDocuments.ts, components/ (CSS modules)
 db/init.sql      creates the pgvector extension (first start of the volume only)
@@ -66,6 +67,13 @@ docker-compose.yml    db (pgvector/pgvector:pg17), api, web (nginx, proxies /api
 - `match_runs` references the resume and the job's extraction, so replacing either deletes stored results.
 - Today's date is in the user message so "5+ years" can be counted from dates in the resume.
 - Show counts, never a single score or percentage. "Not found" means the resume doesn't show it.
+
+## Fit grid
+
+- Main view when no document is selected. One column per job, must-haves first. Requirements are deliberately not merged across jobs: wording differs, and merging would need another model call that could join things which are not the same.
+- `GET /api/overview` returns every job's stored requirements and matches. `null` means "not done yet"; `[]` means done and empty.
+- Billed steps stay explicit per column. Opening a cell shows the reason, the job's wording and the cited resume lines in context.
+- The grid remounts (and reloads) when documents are added or removed.
 
 ## Rules
 
