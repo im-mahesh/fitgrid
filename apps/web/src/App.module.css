@@ -1,0 +1,69 @@
+.page {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.name {
+  margin: 0;
+}
+
+.tagline {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: 22rem minmax(0, 1fr);
+  align-items: start;
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+.inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.section h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.preview {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.error {
+  color: var(--bad);
+}
+
+@media (max-width: 768px) {
+  .columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
