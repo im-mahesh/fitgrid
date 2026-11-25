@@ -13,6 +13,21 @@ jobs:
     defaults:
       run:
         working-directory: apps/api
+    services:
+      db:
+        image: pgvector/pgvector:pg17
+        env:
+          POSTGRES_USER: fitgrid
+          POSTGRES_PASSWORD: fitgrid
+          POSTGRES_DB: fitgrid
+        ports:
+          - 5434:5432
+        options: >-
+          --health-cmd "pg_isready -h 127.0.0.1 -U fitgrid"
+          --health-interval 5s
+          --health-retries 20
+    env:
+      REQUIRE_DB: "1" # fail, rather than skip, if the database tests can't run
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
