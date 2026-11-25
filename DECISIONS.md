@@ -22,6 +22,10 @@ _Your answer. What did the two-column handling solve, where does it still fail, 
 
 _Your answer. Why structured output, why require a cited line, what does that check miss, and how are job posts that contain instructions handled?_
 
+## How is a verdict decided, and when is it wrong?
+
+_Your answer. Why three verdicts and no score, what happens to a claim with no cited line, what that check cannot catch, and what personal data is sent._
+
 ## Why no orchestration framework?
 
 _Your answer. What would make you adopt one?_

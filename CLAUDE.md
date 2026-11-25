@@ -2,7 +2,7 @@
 
 Career assistant: one resume against up to five job posts. For every job requirement it shows whether the resume proves it (**met**, **partial**, **not found**), citing resume line numbers, plus a chat about fit and interview preparation.
 
-**Built so far:** upload or paste one resume and up to five jobs, parse them into numbered lines, store them in Postgres, preview and delete them; extract each job's requirements with Claude. No resume matching yet. Update this line in the same change that adds a feature, and delete anything here that stops being true.
+**Built so far:** upload or paste one resume and up to five jobs, parse them into numbered lines, store them in Postgres, preview and delete them; extract each job's requirements with Claude, and judge the resume against them. No grid across jobs, eval or chat yet. Update this line in the same change that adds a feature, and delete anything here that stops being true.
 
 ## Layout
 
@@ -12,10 +12,13 @@ apps/api/app/
   documents.py   upload, list, read, delete routes
   parsing.py     text/PDF -> numbered lines with sections
   pdf_layout.py  reading order for two-column PDFs
-  store.py       SQL for documents, lines, requirements and the call log
+  store.py       SQL for documents, lines, requirements, matches and the call log
   llm.py         one structured Claude call: errors, tokens, time, cost
   extraction.py  requirements prompt, schema and checks
   requirements.py  requirement routes
+  matching.py    match prompt, contact redaction and verdict checks
+  matches.py     match routes
+  call_log.py    writes the llm_calls row
   db.py          connections, schema.sql, health check
 apps/web/src/    App.tsx, api.ts, useDocuments.ts, components/ (CSS modules)
 db/init.sql      creates the pgvector extension (first start of the volume only)
@@ -52,6 +55,17 @@ docker-compose.yml    db (pgvector/pgvector:pg17), api, web (nginx, proxies /api
 - Extraction runs only on `POST /api/jobs/{id}/requirements`, is cached per job for the same `PROMPT_VERSION` and model, and holds no database connection while waiting. Bump `PROMPT_VERSION` when the prompt or checks change.
 - A requirement without a real cited line is rejected in code. That proves the line exists, not that it supports the requirement: only an eval can check that.
 - Known gaps: two simultaneous requests for one job both call the model; there is no rate limit or spend cap.
+- One call may take 150 s and is retried once; nginx waits 320 s. Keep the proxy timeout above the SDK's total.
+
+## Matching
+
+- `POST|GET /api/jobs/{id}/match`. Needs a resume and current requirements (409 otherwise).
+- The whole resume goes to the model, never retrieved passages: omitting a line would report a false gap.
+- Verdicts: `met`, `partial`, `not_found`, plus `not_assessed` when the model skips a requirement. A `met`/`partial` with no real resume line is downgraded to `not_found` and counted in `rejected_items`. A false "met" is the worst error.
+- Emails and phone numbers are redacted before sending. This is not anonymisation: names, employers and schools still go.
+- `match_runs` references the resume and the job's extraction, so replacing either deletes stored results.
+- Today's date is in the user message so "5+ years" can be counted from dates in the resume.
+- Show counts, never a single score or percentage. "Not found" means the resume doesn't show it.
 
 ## Rules
 

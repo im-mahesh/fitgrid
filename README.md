@@ -2,7 +2,7 @@
 
 See what your resume proves for each job, requirement by requirement.
 
-> Status: you can add a resume and up to five job posts (PDF, TXT, MD or pasted text), see how each was read, line by line, and extract each job's requirements with Claude. Matching your resume against them is not built yet.
+> Status: you can add a resume and up to five job posts (PDF, TXT, MD or pasted text), see how each was read, line by line, extract each job's requirements with Claude, and compare your resume with them: met, partial or not found, with the resume lines behind each verdict.
 
 ## Run with Docker
 
@@ -54,7 +54,7 @@ bash scripts/gen-types.sh
 
 Copy `.env.example` to `.env`, then set:
 
-- `ANTHROPIC_API_KEY`: needed to extract requirements. Calls are billed to this key; the job post is sent to Anthropic.
+- `ANTHROPIC_API_KEY`: needed to extract requirements and compare your resume. Calls are billed to this key. The job post is sent to Anthropic when you extract, and your whole resume (emails and phone numbers removed) when you compare.
 - `FITGRID_MODEL`: optional, default `claude-opus-5-5`.
 - Host ports and the local database password, if the defaults clash.
 
