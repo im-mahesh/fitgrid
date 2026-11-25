@@ -56,3 +56,13 @@ def rate_limited() -> RateLimitError:
 
 def unreachable() -> APIConnectionError:
     return APIConnectionError(request=_REQUEST)
+
+
+def verdict(
+    requirement: int, verdict: str, lines: list[int], reason: str = "Your resume says so."
+) -> dict[str, Any]:
+    return {"requirement": requirement, "verdict": verdict, "reason": reason, "resume_lines": lines}
+
+
+def match_reply(*results: dict[str, Any]) -> str:
+    return json.dumps({"results": list(results)})

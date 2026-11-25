@@ -8,7 +8,7 @@ from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from app import db, documents, llm, parsing, requirements, store
+from app import db, documents, llm, matches, parsing, requirements, store
 from app.config import get_settings
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
@@ -29,6 +29,7 @@ app = FastAPI(
 )
 app.include_router(documents.router)
 app.include_router(requirements.router)
+app.include_router(matches.router)
 
 
 def _error(status: int, message: str) -> JSONResponse:

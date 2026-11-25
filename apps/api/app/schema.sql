@@ -54,3 +54,22 @@ CREATE TABLE IF NOT EXISTS llm_calls (
     rejected_items integer NOT NULL DEFAULT 0,
     cost_usd       numeric(12, 6)
 );
+
+-- Results of one job against one resume. Deleting or replacing the resume, or
+-- re-extracting the job's requirements, removes them, so they can't go stale.
+CREATE TABLE IF NOT EXISTS match_runs (
+    job_id         uuid PRIMARY KEY REFERENCES extractions (document_id) ON DELETE CASCADE,
+    resume_id      uuid NOT NULL REFERENCES documents (id) ON DELETE CASCADE,
+    prompt_version text NOT NULL,
+    model          text NOT NULL,
+    created_at     timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS matches (
+    job_id       uuid      NOT NULL REFERENCES match_runs (job_id) ON DELETE CASCADE,
+    position     integer   NOT NULL,
+    verdict      text      NOT NULL,
+    reason       text      NOT NULL,
+    line_numbers integer[] NOT NULL,
+    PRIMARY KEY (job_id, position)
+);

@@ -14,7 +14,7 @@ from pydantic import BaseModel, ValidationError
 logger = logging.getLogger(__name__)
 
 MAX_TOKENS = 16000  # thinking counts towards this, so leave room
-TIMEOUT_SECONDS = 80  # with one retry this stays under the proxy's 180 s read timeout
+TIMEOUT_SECONDS = 150  # matching 40 requirements can take over a minute
 MAX_RETRIES = 1
 EFFORT = "medium"
 # Lets the API retry a request on another model if a safety classifier declines it.

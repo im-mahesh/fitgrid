@@ -9,6 +9,7 @@ from pydantic import BaseModel
 
 from app.extraction import Requirement
 from app.llm import CallRecord
+from app.matching import Match
 from app.parsing import Line
 
 MAX_JOBS = 5
@@ -170,3 +171,49 @@ def record_llm_call(connection: psycopg.Connection, call: CallRecord) -> None:
     columns = ", ".join(values)  # field names of CallRecord, not user input
     placeholders = ", ".join(f"%({name})s" for name in values)
     connection.execute(f"INSERT INTO llm_calls ({columns}) VALUES ({placeholders})", values)
+
+
+def get_resume_id(connection: psycopg.Connection) -> UUID | None:
+    row = connection.execute("SELECT id FROM documents WHERE kind = 'resume'").fetchone()
+    return row[0] if row else None
+
+
+def get_matches(
+    connection: psycopg.Connection, job_id: UUID, prompt_version: str, model: str
+) -> list[Match] | None:
+    """The stored results for this prompt and model, or None if there are none."""
+    found = connection.execute(
+        "SELECT 1 FROM match_runs WHERE job_id = %s AND prompt_version = %s AND model = %s",
+        (job_id, prompt_version, model),
+    ).fetchone()
+    if not found:
+        return None
+    with connection.cursor(row_factory=class_row(Match)) as cursor:
+        cursor.execute(
+            "SELECT position, verdict, reason, line_numbers "
+            "FROM matches WHERE job_id = %s ORDER BY position",
+            (job_id,),
+        )
+        return cursor.fetchall()
+
+
+def save_matches(
+    connection: psycopg.Connection,
+    job_id: UUID,
+    resume_id: UUID,
+    prompt_version: str,
+    model: str,
+    matches: list[Match],
+) -> None:
+    _lock(connection, f"match:{job_id}")
+    connection.execute("DELETE FROM match_runs WHERE job_id = %s", (job_id,))
+    connection.execute(
+        "INSERT INTO match_runs (job_id, resume_id, prompt_version, model) VALUES (%s, %s, %s, %s)",
+        (job_id, resume_id, prompt_version, model),
+    )
+    with connection.cursor() as cursor:
+        cursor.executemany(
+            "INSERT INTO matches (job_id, position, verdict, reason, line_numbers) "
+            "VALUES (%s, %s, %s, %s, %s)",
+            [(job_id, m.position, m.verdict, m.reason, m.line_numbers) for m in matches],
+        )

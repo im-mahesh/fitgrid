@@ -4,7 +4,6 @@ Extraction costs money, so it only happens on an explicit POST and the result is
 reused until the prompt or model changes.
 """
 
-import logging
 from uuid import UUID
 
 import psycopg
@@ -12,9 +11,8 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from app import db, extraction, llm, store
+from app.call_log import log_call
 from app.config import get_settings
-
-logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api")
 
@@ -41,15 +39,6 @@ def _stored(job_id: UUID) -> tuple[store.DocumentDetail, RequirementsResponse]:
     )
 
 
-def _log_call(record: llm.CallRecord) -> None:
-    """Losing a metrics row must not fail a request that has already been paid for."""
-    try:
-        with db.connect(get_settings().database_url) as connection:
-            store.record_llm_call(connection, record)
-    except psycopg.Error:
-        logger.warning("Could not record an LLM call", exc_info=True)
-
-
 @router.get("/jobs/{job_id}/requirements", response_model=RequirementsResponse)
 def read_requirements(job_id: UUID) -> RequirementsResponse:
     return _stored(job_id)[1]
@@ -67,9 +56,9 @@ def extract_job_requirements(job_id: UUID) -> RequirementsResponse:
         requirements, record = extraction.extract_requirements(client, settings.model, job.lines)
     except llm.LLMError as exc:
         if exc.record:
-            _log_call(exc.record)
+            log_call(exc.record)
         raise
-    _log_call(record)
+    log_call(record)
     try:
         with db.connect(settings.database_url) as connection:
             store.save_requirements(
