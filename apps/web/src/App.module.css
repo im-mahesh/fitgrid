@@ -1,5 +1,5 @@
 .page {
-  max-width: 72rem;
+  max-width: 96rem;
   margin: 0 auto;
   padding: 1.5rem 1rem;
 }
@@ -47,9 +47,27 @@
 }
 
 .preview {
+  min-width: 0;
   padding: 1rem;
   border: 1px solid var(--border);
   border-radius: 10px;
+}
+
+.gridButton {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.gridButton[aria-pressed='true'] {
+  border-color: var(--accent);
+  background: var(--highlight);
 }
 
 .note {

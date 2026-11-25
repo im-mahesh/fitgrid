@@ -21,32 +21,6 @@
   background: var(--highlight);
 }
 
-.badge {
-  flex: none;
-  min-width: 5.5rem;
-  padding: 0.05rem 0.4rem;
-  border: 1px solid currentColor;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  text-align: center;
-}
-
-.met {
-  color: var(--good);
-}
-
-.partial {
-  color: var(--warn);
-}
-
-.not_found {
-  color: var(--bad);
-}
-
-.not_assessed {
-  color: var(--muted);
-}
-
 .text {
   flex: 1;
   min-width: 10rem;

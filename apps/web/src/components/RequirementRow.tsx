@@ -1,6 +1,6 @@
 import type { Match, Requirement } from '../api.ts'
 import styles from './RequirementRow.module.css'
-import { VERDICT_LABELS } from './verdicts.ts'
+import { VerdictBadge } from './VerdictBadge.tsx'
 
 interface RequirementRowProps {
   requirement: Requirement
@@ -18,9 +18,7 @@ export function RequirementRow({ requirement, match, selected, onSelect }: Requi
       <button type="button" className={styles.item} aria-pressed={selected} onClick={onSelect}>
         {match && (
           <>
-            <span className={`${styles.badge} ${styles[match.verdict]}`}>
-              {VERDICT_LABELS[match.verdict]}
-            </span>{' '}
+            <VerdictBadge verdict={match.verdict} />{' '}
           </>
         )}
         <span className={styles.text}>{requirement.text}</span>{' '}

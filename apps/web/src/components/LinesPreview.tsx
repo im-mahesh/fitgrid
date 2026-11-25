@@ -7,6 +7,9 @@ function isHeading(line: Line): boolean {
   return line.text.replace(/^[# ]+|:$/g, '') === line.section
 }
 
+const PARSING_HINT =
+  'This is what FitGrid read. Results will cite these line numbers, so check that they look right.'
+
 /**
  * The document as FitGrid read it. These line numbers are what later results
  * cite, so the user should be able to see that the parsing is right.
@@ -14,9 +17,11 @@ function isHeading(line: Line): boolean {
 export function LinesPreview({
   documentId,
   highlighted = [],
+  hint = PARSING_HINT,
 }: {
   documentId: string
   highlighted?: number[]
+  hint?: string
 }) {
   const firstHighlighted = useRef<HTMLLIElement>(null)
   const [document, setDocument] = useState<DocumentDetail | null>(null)
@@ -42,10 +47,7 @@ export function LinesPreview({
   return (
     <section aria-label="Parsed lines">
       <h2 className={styles.title}>{document.title}</h2>
-      <p className={styles.hint}>
-        This is what FitGrid read. Results will cite these line numbers, so check that they look
-        right.
-      </p>
+      <p className={styles.hint}>{hint}</p>
       <ol className={styles.lines}>
         {document.lines.map((line) => (
           <li

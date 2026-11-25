@@ -12,6 +12,7 @@ import styles from './App.module.css'
 import { DeleteAllButton } from './components/DeleteAllButton.tsx'
 import { DocumentCard } from './components/DocumentCard.tsx'
 import { DocumentForm } from './components/DocumentForm.tsx'
+import { FitGrid } from './components/FitGrid.tsx'
 import { JobView } from './components/JobView.tsx'
 import { LinesPreview } from './components/LinesPreview.tsx'
 import { HealthStatus } from './HealthStatus.tsx'
@@ -71,6 +72,15 @@ export default function App() {
 
       <div className={styles.columns}>
         <div className={styles.inputs}>
+          <button
+            type="button"
+            className={styles.gridButton}
+            aria-pressed={!selected}
+            onClick={() => setSelectedId(null)}
+          >
+            Fit grid
+          </button>
+
           <section aria-label="Resume" className={styles.section}>
             <h2>Your resume</h2>
             {resume && card(resume)}
@@ -106,9 +116,8 @@ export default function App() {
           ) : selected ? (
             <LinesPreview key={selected.id} documentId={selected.id} />
           ) : (
-            <p className={styles.note}>
-              Add your resume and a job, then select one to see how it was read.
-            </p>
+            // Remounts, and so reloads, whenever a document is added or removed.
+            <FitGrid key={[resume, ...jobs].map((d) => d?.id).join()} />
           )}
         </main>
       </div>

@@ -110,6 +110,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/overview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Overview */
+        get: operations["read_overview_api_overview_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/health": {
         parameters: {
             query?: never;
@@ -224,6 +241,14 @@ export interface components {
             status: "ok" | "degraded";
             database: components["schemas"]["DatabaseStatus"];
         };
+        /** JobOverview */
+        JobOverview: {
+            job: components["schemas"]["DocumentSummary"];
+            /** Requirements */
+            requirements: components["schemas"]["Requirement"][] | null;
+            /** Matches */
+            matches: components["schemas"]["Match"][] | null;
+        };
         /** Line */
         Line: {
             /** Number */
@@ -258,6 +283,13 @@ export interface components {
              * @default []
              */
             results: components["schemas"]["Match"][];
+        };
+        /** Overview */
+        Overview: {
+            /** Resume Id */
+            resume_id: string | null;
+            /** Jobs */
+            jobs: components["schemas"]["JobOverview"][];
         };
         /** Requirement */
         Requirement: {
@@ -596,6 +628,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_overview_api_overview_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Overview"];
                 };
             };
         };

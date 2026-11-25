@@ -35,6 +35,7 @@ function fakeApi(initial: Partial<DocumentList> = {}, uploadError?: string) {
       return new Response(null, { status: 204 })
     }
     if (url === '/api/documents') return json(state)
+    if (url === '/api/overview') return json({ resume_id: state.resume?.id ?? null, jobs: [] })
     return json(document('r1', 'resume', 'Pasted resume'))
   })
   vi.stubGlobal('fetch', fetch)
