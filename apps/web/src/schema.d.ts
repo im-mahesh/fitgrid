@@ -74,6 +74,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/jobs/{job_id}/requirements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Requirements */
+        get: operations["read_requirements_api_jobs__job_id__requirements_get"];
+        put?: never;
+        /** Extract Job Requirements */
+        post: operations["extract_job_requirements_api_jobs__job_id__requirements_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/health": {
         parameters: {
             query?: never;
@@ -196,6 +214,37 @@ export interface components {
             section?: string | null;
             /** Text */
             text: string;
+        };
+        /** Requirement */
+        Requirement: {
+            /** Text */
+            text: string;
+            /**
+             * Importance
+             * @enum {string}
+             */
+            importance: "must" | "nice";
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "skill" | "experience" | "education" | "other";
+            /** Line Numbers */
+            line_numbers: number[];
+            /** Position */
+            position: number;
+        };
+        /** RequirementsResponse */
+        RequirementsResponse: {
+            /** Extracted */
+            extracted: boolean;
+            /** Model */
+            model?: string | null;
+            /**
+             * Requirements
+             * @default []
+             */
+            requirements: components["schemas"]["Requirement"][];
         };
         /** ValidationError */
         ValidationError: {
@@ -371,6 +420,68 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_requirements_api_jobs__job_id__requirements_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RequirementsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    extract_job_requirements_api_jobs__job_id__requirements_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RequirementsResponse"];
+                };
             };
             /** @description Validation Error */
             422: {

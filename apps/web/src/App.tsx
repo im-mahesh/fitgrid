@@ -12,6 +12,7 @@ import styles from './App.module.css'
 import { DeleteAllButton } from './components/DeleteAllButton.tsx'
 import { DocumentCard } from './components/DocumentCard.tsx'
 import { DocumentForm } from './components/DocumentForm.tsx'
+import { JobView } from './components/JobView.tsx'
 import { LinesPreview } from './components/LinesPreview.tsx'
 import { HealthStatus } from './HealthStatus.tsx'
 import { useDocuments } from './useDocuments.ts'
@@ -89,13 +90,16 @@ export default function App() {
           </section>
 
           <p className={styles.note}>
-            Documents are stored in this app&apos;s database. Nothing is sent to an AI model yet.
+            Documents are stored in this app&apos;s database. A job post is sent to Anthropic when you
+            extract its requirements. Your resume isn&apos;t sent anywhere yet.
           </p>
           <HealthStatus />
         </div>
 
         <main className={styles.preview}>
-          {selected ? (
+          {selected?.kind === 'job' ? (
+            <JobView key={selected.id} jobId={selected.id} />
+          ) : selected ? (
             <LinesPreview key={selected.id} documentId={selected.id} />
           ) : (
             <p className={styles.note}>

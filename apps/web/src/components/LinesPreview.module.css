@@ -36,3 +36,8 @@
 .heading {
   font-weight: 700;
 }
+
+.highlight {
+  background: var(--highlight);
+  box-shadow: inset 3px 0 0 var(--accent);
+}

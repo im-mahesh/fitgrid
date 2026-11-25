@@ -8,6 +8,8 @@ export type DocumentList = Schemas['DocumentList']
 export type DocumentSummary = Schemas['DocumentSummary']
 export type DocumentDetail = Schemas['DocumentDetail']
 export type Line = Schemas['Line']
+export type Requirement = Schemas['Requirement']
+export type RequirementsResponse = Schemas['RequirementsResponse']
 
 /** What the user gave us: exactly one of a file or pasted text, plus an optional job title. */
 export interface DocumentInput {
@@ -72,5 +74,12 @@ export const addJob = (input: DocumentInput) =>
 
 export const deleteDocument = (id: string) =>
   request<void>(`/documents/${id}`, { method: 'DELETE' })
+
+export const getRequirements = (jobId: string) =>
+  request<RequirementsResponse>(`/jobs/${jobId}/requirements`)
+
+/** Calls Claude (billed) unless a stored result exists. */
+export const extractRequirements = (jobId: string) =>
+  request<RequirementsResponse>(`/jobs/${jobId}/requirements`, { method: 'POST' })
 
 export const deleteAllDocuments = () => request<void>('/documents', { method: 'DELETE' })

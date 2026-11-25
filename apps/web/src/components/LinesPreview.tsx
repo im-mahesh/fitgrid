@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { getDocument, type DocumentDetail, type Line } from '../api.ts'
 import styles from './LinesPreview.module.css'
 
@@ -11,7 +11,14 @@ function isHeading(line: Line): boolean {
  * The document as FitGrid read it. These line numbers are what later results
  * cite, so the user should be able to see that the parsing is right.
  */
-export function LinesPreview({ documentId }: { documentId: string }) {
+export function LinesPreview({
+  documentId,
+  highlighted = [],
+}: {
+  documentId: string
+  highlighted?: number[]
+}) {
+  const firstHighlighted = useRef<HTMLLIElement>(null)
   const [document, setDocument] = useState<DocumentDetail | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -25,6 +32,10 @@ export function LinesPreview({ documentId }: { documentId: string }) {
     }
   }, [documentId])
 
+  useEffect(() => {
+    firstHighlighted.current?.scrollIntoView?.({ block: 'nearest', behavior: 'smooth' })
+  }, [highlighted])
+
   if (error) return <p role="alert">{error}</p>
   if (!document) return <p>Loading…</p>
 
@@ -37,7 +48,12 @@ export function LinesPreview({ documentId }: { documentId: string }) {
       </p>
       <ol className={styles.lines}>
         {document.lines.map((line) => (
-          <li key={line.number} className={styles.line}>
+          <li
+            key={line.number}
+            ref={line.number === highlighted[0] ? firstHighlighted : undefined}
+            className={`${styles.line} ${highlighted.includes(line.number) ? styles.highlight : ''}`}
+            aria-current={highlighted.includes(line.number) ? 'true' : undefined}
+          >
             <span className={styles.number}>{line.number}</span>
             <span className={isHeading(line) ? styles.heading : ''}>{line.text}</span>
           </li>
