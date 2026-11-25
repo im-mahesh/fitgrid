@@ -7,6 +7,8 @@ import psycopg
 from psycopg.rows import class_row
 from pydantic import BaseModel
 
+from app.extraction import Requirement
+from app.llm import CallRecord
 from app.parsing import Line
 
 MAX_JOBS = 5
@@ -117,3 +119,54 @@ def delete_document(connection: psycopg.Connection, document_id: UUID) -> bool:
 
 def delete_all(connection: psycopg.Connection) -> None:
     connection.execute("DELETE FROM documents")
+
+
+def get_requirements(
+    connection: psycopg.Connection, document_id: UUID, prompt_version: str, model: str
+) -> list[Requirement] | None:
+    """The stored extraction for this prompt and model, or None if there isn't one."""
+    found = connection.execute(
+        "SELECT 1 FROM extractions WHERE document_id = %s AND prompt_version = %s AND model = %s",
+        (document_id, prompt_version, model),
+    ).fetchone()
+    if not found:
+        return None
+    with connection.cursor(row_factory=class_row(Requirement)) as cursor:
+        cursor.execute(
+            "SELECT position, text, importance, category, line_numbers "
+            "FROM requirements WHERE document_id = %s ORDER BY position",
+            (document_id,),
+        )
+        return cursor.fetchall()
+
+
+def save_requirements(
+    connection: psycopg.Connection,
+    document_id: UUID,
+    prompt_version: str,
+    model: str,
+    requirements: list[Requirement],
+) -> None:
+    _lock(connection, f"extraction:{document_id}")
+    connection.execute("DELETE FROM extractions WHERE document_id = %s", (document_id,))
+    connection.execute(
+        "INSERT INTO extractions (document_id, prompt_version, model) VALUES (%s, %s, %s)",
+        (document_id, prompt_version, model),
+    )
+    with connection.cursor() as cursor:
+        cursor.executemany(
+            "INSERT INTO requirements "
+            "(document_id, position, text, importance, category, line_numbers) "
+            "VALUES (%s, %s, %s, %s, %s, %s)",
+            [
+                (document_id, r.position, r.text, r.importance, r.category, r.line_numbers)
+                for r in requirements
+            ],
+        )
+
+
+def record_llm_call(connection: psycopg.Connection, call: CallRecord) -> None:
+    values = call.model_dump()
+    columns = ", ".join(values)  # field names of CallRecord, not user input
+    placeholders = ", ".join(f"%({name})s" for name in values)
+    connection.execute(f"INSERT INTO llm_calls ({columns}) VALUES ({placeholders})", values)

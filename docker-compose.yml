@@ -25,6 +25,9 @@ services:
     build: ./apps/api
     environment:
       DATABASE_URL: postgresql://fitgrid:${POSTGRES_PASSWORD:-fitgrid}@db:5432/fitgrid
+      # Read from your shell or .env. Without a key, extraction returns a clear 503.
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      FITGRID_MODEL: ${FITGRID_MODEL:-claude-opus-5-5}
     ports:
       - "127.0.0.1:${API_PORT:-8100}:8000"
     depends_on:

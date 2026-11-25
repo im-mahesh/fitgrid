@@ -8,9 +8,10 @@ from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from app import db, documents, parsing, store
+from app import db, documents, llm, parsing, requirements, store
 from app.config import get_settings
 
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -27,6 +28,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 app.include_router(documents.router)
+app.include_router(requirements.router)
 
 
 def _error(status: int, message: str) -> JSONResponse:
@@ -41,6 +43,11 @@ def unreadable_document(_: Request, exc: parsing.ParsingError) -> JSONResponse:
 @app.exception_handler(store.JobLimitError)
 def too_many_jobs(_: Request, exc: store.JobLimitError) -> JSONResponse:
     return _error(409, str(exc))
+
+
+@app.exception_handler(llm.LLMError)
+def model_failed(_: Request, exc: llm.LLMError) -> JSONResponse:
+    return _error(exc.status_code, str(exc))
 
 
 @app.exception_handler(psycopg.OperationalError)
