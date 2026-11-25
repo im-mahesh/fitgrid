@@ -14,6 +14,10 @@ _Your answer. What could go wrong with top-k here? When would this stop working?
 
 _Your answer._
 
+## How are documents split into lines, and why pdfplumber?
+
+_Your answer. What did the two-column handling solve, where does it still fail, and why are headings matched by name only?_
+
 ## Why no orchestration framework?
 
 _Your answer. What would make you adopt one?_

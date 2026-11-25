@@ -2,7 +2,7 @@
 
 See what your resume proves for each job, requirement by requirement.
 
-> Status: skeleton only. The API, web app and database run and report their health. No product features yet.
+> Status: you can add a resume and up to five job posts (PDF, TXT, MD or pasted text) and see how each was read, line by line. Matching is not built yet, and nothing is sent to an AI model.
 
 ## Run with Docker
 
@@ -38,7 +38,15 @@ cd apps/api && uv run ruff check . && uv run ruff format --check . && uv run pyt
 cd apps/web && pnpm typecheck && pnpm lint && pnpm test && pnpm build
 ```
 
+The API tests need Postgres running (`docker compose up -d db`); without it the database tests are skipped.
+
 CI runs these on every branch, plus a Docker Compose smoke test.
+
+After changing an API model, regenerate the web types:
+
+```bash
+bash scripts/gen-types.sh
+```
 
 ## Configuration
 
