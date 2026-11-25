@@ -18,6 +18,10 @@ _Your answer._
 
 _Your answer. What did the two-column handling solve, where does it still fail, and why are headings matched by name only?_
 
+## How are requirements extracted, and what do I not trust?
+
+_Your answer. Why structured output, why require a cited line, what does that check miss, and how are job posts that contain instructions handled?_
+
 ## Why no orchestration framework?
 
 _Your answer. What would make you adopt one?_

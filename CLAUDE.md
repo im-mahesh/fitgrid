@@ -2,7 +2,7 @@
 
 Career assistant: one resume against up to five job posts. For every job requirement it shows whether the resume proves it (**met**, **partial**, **not found**), citing resume line numbers, plus a chat about fit and interview preparation.
 
-**Built so far:** upload or paste one resume and up to five jobs, parse them into numbered lines, store them in Postgres, preview and delete them. No AI features yet. Update this line in the same change that adds a feature, and delete anything here that stops being true.
+**Built so far:** upload or paste one resume and up to five jobs, parse them into numbered lines, store them in Postgres, preview and delete them; extract each job's requirements with Claude. No resume matching yet. Update this line in the same change that adds a feature, and delete anything here that stops being true.
 
 ## Layout
 
@@ -12,7 +12,10 @@ apps/api/app/
   documents.py   upload, list, read, delete routes
   parsing.py     text/PDF -> numbered lines with sections
   pdf_layout.py  reading order for two-column PDFs
-  store.py       SQL for documents and lines
+  store.py       SQL for documents, lines, requirements and the call log
+  llm.py         one structured Claude call: errors, tokens, time, cost
+  extraction.py  requirements prompt, schema and checks
+  requirements.py  requirement routes
   db.py          connections, schema.sql, health check
 apps/web/src/    App.tsx, api.ts, useDocuments.ts, components/ (CSS modules)
 db/init.sql      creates the pgvector extension (first start of the volume only)
@@ -39,6 +42,16 @@ docker-compose.yml    db (pgvector/pgvector:pg17), api, web (nginx, proxies /api
 - Retrieval is used for chat context, not for matching.
 - No single percentage score. "Not found" means the resume doesn't show it.
 - Build order: parsing, extraction, matching, grid and evidence view, eval, chat, observability.
+
+## Model calls
+
+- All calls go through `llm.structured_call`. It uses `client.beta.messages.create` with a JSON schema (not `parse`, which validates before the stop reason and token counts can be read), effort `medium`, and server-side refusal fallbacks (`fallbacks="default"`).
+- Never send `temperature`, `top_p`, `top_k`, `thinking` or a forced `tool_choice` to this model.
+- Model: `FITGRID_MODEL`, default `claude-opus-5-5`. Add its price to `PRICE_PER_MILLION_TOKENS`, or cost is recorded as unknown.
+- Every call writes one `llm_calls` row (metrics only, kept after documents are deleted) and one log line. Prompts and replies are never logged. Do not set `ANTHROPIC_LOG=debug`: the SDK would log request bodies.
+- Extraction runs only on `POST /api/jobs/{id}/requirements`, is cached per job for the same `PROMPT_VERSION` and model, and holds no database connection while waiting. Bump `PROMPT_VERSION` when the prompt or checks change.
+- A requirement without a real cited line is rejected in code. That proves the line exists, not that it supports the requirement: only an eval can check that.
+- Known gaps: two simultaneous requests for one job both call the model; there is no rate limit or spend cap.
 
 ## Rules
 

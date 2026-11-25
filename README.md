@@ -2,7 +2,7 @@
 
 See what your resume proves for each job, requirement by requirement.
 
-> Status: you can add a resume and up to five job posts (PDF, TXT, MD or pasted text) and see how each was read, line by line. Matching is not built yet, and nothing is sent to an AI model.
+> Status: you can add a resume and up to five job posts (PDF, TXT, MD or pasted text), see how each was read, line by line, and extract each job's requirements with Claude. Matching your resume against them is not built yet.
 
 ## Run with Docker
 
@@ -21,8 +21,10 @@ docker compose up -d db
 ```
 
 ```bash
-cd apps/api && uv sync && uv run uvicorn app.main:app --reload --port 8100
+cd apps/api && uv sync && uv run --env-file ../../.env uvicorn app.main:app --reload --port 8100
 ```
+
+(`--env-file` needs the `.env` file from the Configuration section.)
 
 ```bash
 cd apps/web && pnpm install && pnpm dev
@@ -50,4 +52,10 @@ bash scripts/gen-types.sh
 
 ## Configuration
 
-Copy `.env.example` to `.env` to change host ports or the local database password. `ANTHROPIC_API_KEY` is not used yet.
+Copy `.env.example` to `.env`, then set:
+
+- `ANTHROPIC_API_KEY`: needed to extract requirements. Calls are billed to this key; the job post is sent to Anthropic.
+- `FITGRID_MODEL`: optional, default `claude-opus-5-5`.
+- Host ports and the local database password, if the defaults clash.
+
+After changing `.env`, run `docker compose up -d` again.
