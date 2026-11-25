@@ -1,0 +1,27 @@
+[project]
+name = "fitgrid-api"
+version = "0.1.0"
+description = "FitGrid API"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "fastapi>=0.165.0",
+    "psycopg[binary]>=3.3.9",
+    "uvicorn[standard]>=0.54.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[dependency-groups]
+dev = [
+    "httpx2>=2.16.2",
+    "pytest>=9.2.0",
+    "ruff>=0.17.6",
+]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
