@@ -4,7 +4,7 @@ See what your resume proves for each job, requirement by requirement.
 
 Add one resume and up to five job posts. Career Intelligent System lists each job's requirements, marks each one **met**, **partial** or **not found** with the resume lines behind it, shows the jobs side by side, and answers questions such as "What skills am I missing for this role?" or "How does my experience align with Job #2?" with cited lines.
 
-Contents: [Setup](#quick-setup) · [Architecture](#architecture) · [RAG and LLM approach](#rag-and-llm-approach) · [Decisions](#key-technical-decisions) · [Production](#taking-it-to-production) · [Standards](#engineering-standards) · [AI tools](#how-ai-tools-were-used) · [With more time](#what-would-change-with-more-time)
+Contents: [Setup](#quick-setup) · [Architecture](#architecture) · [RAG and LLM approach](#rag-and-llm-approach) · [Decisions](#key-technical-decisions-and-why) · [Production](#taking-it-to-production) · [Standards](#engineering-standards) · [AI tools](#how-ai-tools-were-used-in-development) · [With more time](#what-id-do-differently-with-more-time)
 
 ## Quick setup
 
