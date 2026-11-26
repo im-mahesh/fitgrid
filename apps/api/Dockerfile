@@ -14,6 +14,16 @@ WORKDIR /app
 COPY pyproject.toml uv.lock .python-version ./
 RUN uv sync --frozen --no-dev
 
+# Bake the embedding model into the image: no download at run time.
+# ONNX Runtime sends usage telemetry to Microsoft unless it is switched off.
+ENV FASTEMBED_CACHE_PATH=/opt/models \
+    ORT_DISABLE_TELEMETRY=1
+COPY app/__init__.py app/embeddings.py ./app/
+# chmod: some cache files are written readable by root only, and the app is not root.
+RUN python -c "from app import embeddings; embeddings.embed_query('warm up')" \
+    && chmod -R a+rX /opt/models
+ENV HF_HUB_OFFLINE=1
+
 COPY app ./app
 
 RUN useradd --system --no-create-home app

@@ -53,3 +53,7 @@
 .remove:hover {
   color: var(--bad);
 }
+
+.number {
+  color: var(--muted);
+}

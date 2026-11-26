@@ -1,6 +1,7 @@
 """A stand-in for the Anthropic client: records requests and returns canned replies."""
 
 import json
+from collections.abc import AsyncIterator
 from types import SimpleNamespace
 from typing import Any
 
@@ -22,7 +23,7 @@ class FakeClaude:
         text: str = "",
         stop_reason: str = "end_turn",
         error: Exception | None = None,
-        model: str = "claude-opus-5-5",
+        model: str = "claude-sonnet-5-5",
         blocks: list[SimpleNamespace] | None = None,
     ):
         self.requests: list[dict[str, Any]] = []
@@ -66,3 +67,47 @@ def verdict(
 
 def match_reply(*results: dict[str, Any]) -> str:
     return json.dumps({"results": list(results)})
+
+
+class FakeStreamingClaude:
+    """The async client's `beta.messages.stream`, replying with canned chunks."""
+
+    def __init__(
+        self,
+        chunks: tuple[str, ...] = ("Your resume shows ", "Python [R2]."),
+        stop_reason: str = "end_turn",
+        error: Exception | None = None,
+    ):
+        self.requests: list[dict[str, Any]] = []
+        self.closed = False
+        self.chunks = chunks
+        self.error = error
+        self.final = SimpleNamespace(
+            stop_reason=stop_reason,
+            model="claude-sonnet-5-5",
+            usage=SimpleNamespace(input_tokens=2000, output_tokens=100),
+        )
+        self.beta = SimpleNamespace(messages=SimpleNamespace(stream=self._stream))
+
+    def _stream(self, **request: Any) -> "FakeStreamingClaude":
+        self.requests.append(request)
+        return self
+
+    async def __aenter__(self) -> "FakeStreamingClaude":
+        return self
+
+    async def __aexit__(self, *exc: object) -> None:
+        self.closed = True
+
+    @property
+    def text_stream(self) -> AsyncIterator[str]:
+        return self._text()
+
+    async def _text(self) -> AsyncIterator[str]:
+        for chunk in self.chunks:
+            yield chunk
+        if self.error:
+            raise self.error  # the connection drops after some text
+
+    async def get_final_message(self) -> SimpleNamespace:
+        return self.final

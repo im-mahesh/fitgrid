@@ -1,0 +1,13 @@
+Arjun Pillai
+EXPERIENCE
+Operations Engineer, Quill Media, February 2022 - present
+- Supported the team that runs our Kubernetes clusters, mostly handling tickets.
+- Wrote Terraform modules for storage and networking.
+- Moved builds from Jenkins to GitHub Actions.
+- Created Grafana dashboards and Prometheus alerts.
+- Patch and harden about 60 Ubuntu servers each month.
+- Automate routine fixes with Bash.
+CERTIFICATIONS
+AWS Certified Solutions Architect - Associate (expired 2023)
+NOTES
+Not yet part of the on-call rota.

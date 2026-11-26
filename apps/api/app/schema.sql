@@ -1,6 +1,8 @@
 -- Applied at API startup; every statement must be safe to run again.
 -- (Replace with a migration tool once a released schema has to change.)
 
+CREATE EXTENSION IF NOT EXISTS vector;
+
 CREATE TABLE IF NOT EXISTS documents (
     id           uuid PRIMARY KEY,
     kind         text NOT NULL CHECK (kind IN ('resume', 'job')),
@@ -72,4 +74,16 @@ CREATE TABLE IF NOT EXISTS matches (
     reason       text      NOT NULL,
     line_numbers integer[] NOT NULL,
     PRIMARY KEY (job_id, position)
+);
+
+-- Embeddings of document lines, filled in on first search. The size must match
+-- embeddings.DIMENSIONS.
+CREATE TABLE IF NOT EXISTS line_embeddings (
+    document_id uuid        NOT NULL,
+    line_no     integer     NOT NULL,
+    model       text        NOT NULL,
+    embedding   vector(384) NOT NULL,
+    PRIMARY KEY (document_id, line_no),
+    FOREIGN KEY (document_id, line_no)
+        REFERENCES document_lines (document_id, line_no) ON DELETE CASCADE
 );

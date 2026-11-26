@@ -1,0 +1,11 @@
+Tomás Ibarra
+EXPERIENCE
+Frontend Developer, Lumen Bank, August 2023 - present
+- Migrated the customer portal from Angular to React and TypeScript.
+- Fixed screen reader and keyboard problems found in an accessibility audit.
+- Added Jest and React Testing Library tests to the payments screens.
+Web Developer, Corvid Studio, May 2020 - July 2023
+- Built marketing sites with React and plain CSS.
+- Set up deploys to run automatically from the main branch.
+SKILLS
+React, TypeScript, JavaScript, CSS, Jest, REST

@@ -55,7 +55,7 @@ def test_extracting_stores_the_result_and_logs_the_call(
     assert response.status_code == 200
     body = response.json()
     assert body["extracted"] is True
-    assert body["model"] == "claude-opus-5-5"
+    assert body["model"] == "claude-sonnet-5-5"
     assert body["requirements"][1] == {
         "position": 2,
         "text": "Kubernetes",
@@ -87,7 +87,7 @@ def test_a_new_prompt_or_model_means_extracting_again(
     if change == "prompt":
         monkeypatch.setattr(extraction, "PROMPT_VERSION", "requirements-v2")
     else:
-        monkeypatch.setenv("FITGRID_MODEL", "claude-sonnet-5-5")
+        monkeypatch.setenv("FITGRID_MODEL", "claude-opus-5-5")
 
     assert client.get(f"/api/jobs/{job}/requirements").json()["extracted"] is False
     assert client.post(f"/api/jobs/{job}/requirements").json()["extracted"] is True

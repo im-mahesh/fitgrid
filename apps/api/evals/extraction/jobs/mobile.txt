@@ -1,0 +1,14 @@
+Mobile Developer (React Native)
+Responsibilities
+- Ship features in our React Native app for iOS and Android
+- Review code and mentor one junior developer
+- Join a weekly on-call rota
+Qualifications
+- Three years of mobile development
+- Strong JavaScript or TypeScript
+- Has published at least one app to a public app store
+- Digital native, ideally a recent graduate
+Bonus points
+- Swift or Kotlin
+- Experience with offline-first apps
+Salary 18-24 LPA. We are an equal opportunity employer.

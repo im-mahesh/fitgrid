@@ -1,5 +1,6 @@
 // Types are generated from the API: run `bash scripts/gen-types.sh` after changing a model.
 import type { components } from './schema.d.ts'
+import { splitEvents } from './sse.ts'
 
 type Schemas = components['schemas']
 
@@ -96,3 +97,42 @@ export const runMatch = (jobId: string) =>
 export const getOverview = () => request<Overview>('/overview')
 
 export const deleteAllDocuments = () => request<void>('/documents', { method: 'DELETE' })
+
+export type ChatMessage = Schemas['ChatMessage']
+export type ChatRequest = Schemas['ChatRequest']
+export type Source = Schemas['Source']
+export type ChatStreamEvent = Schemas['ChatStreamEvent']
+
+/**
+ * Ask a question (billed). Calls `onEvent` for each event as it arrives, and
+ * throws if the request is refused or the stream stops without finishing.
+ */
+export async function streamChat(
+  body: ChatRequest,
+  onEvent: (event: ChatStreamEvent) => void,
+  signal: AbortSignal,
+): Promise<void> {
+  const response = await send('/chat', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(body),
+    signal,
+  })
+  if (!response.ok || !response.body) throw new Error(await errorMessage(response))
+
+  const reader = response.body.pipeThrough(new TextDecoderStream()).getReader()
+  let buffer = ''
+  let finished = false
+  for (;;) {
+    const { value, done } = await reader.read()
+    if (done) break
+    const { data, rest } = splitEvents(buffer + value)
+    buffer = rest
+    for (const payload of data) {
+      const event = JSON.parse(payload) as ChatStreamEvent
+      finished ||= event.type === 'done' || event.type === 'error'
+      onEvent(event)
+    }
+  }
+  if (!finished) throw new Error('The answer was interrupted.')
+}

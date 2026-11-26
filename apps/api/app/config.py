@@ -3,7 +3,7 @@ import os
 from pydantic import BaseModel
 
 DEFAULT_DATABASE_URL = "postgresql://fitgrid:fitgrid@localhost:5434/fitgrid"
-DEFAULT_MODEL = "claude-opus-5-5"
+DEFAULT_MODEL = "claude-sonnet-5-5"
 
 
 class Settings(BaseModel):

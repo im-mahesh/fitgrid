@@ -34,6 +34,19 @@ function fakeApi(initial: Partial<DocumentList> = {}, uploadError?: string) {
       state.jobs = []
       return new Response(null, { status: 204 })
     }
+    if (url === '/api/documents/r1' && method === 'DELETE') {
+      state.resume = null
+      return new Response(null, { status: 204 })
+    }
+    if (url === '/api/chat') {
+      const source = { ref: 'R2', document_id: 'r1', line_number: 2, text: 'Python, Docker' }
+      const events = [
+        { type: 'sources', jobs: [1], sources: [source] },
+        { type: 'token', text: 'You list Docker [R2].' },
+        { type: 'done' },
+      ]
+      return new Response(events.map((e) => `data: ${JSON.stringify(e)}\n\n`).join(''))
+    }
     if (url === '/api/documents') return json(state)
     if (url === '/api/overview') return json({ resume_id: state.resume?.id ?? null, jobs: [] })
     return json(document('r1', 'resume', 'Pasted resume'))
@@ -103,5 +116,23 @@ describe('App', () => {
 
     await waitFor(() => expect(screen.queryByRole('button', { name: 'Remove My CV' })).toBeNull())
     expect(deletes()).toHaveLength(1)
+  })
+
+  it('opens the cited line, and restarts the chat when a document is removed', async () => {
+    fakeApi({ resume: document('r1', 'resume', 'My CV'), jobs: [document('j1', 'job', 'Acme')] })
+    render(<App />)
+    await screen.findByRole('button', { name: /^#1 Acme/ })
+
+    fireEvent.click(screen.getByRole('button', { name: 'What skills am I missing for Job #1?' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Resume line 2' }))
+
+    expect(await screen.findByText('Cited in the chat: Resume line 2.')).toBeTruthy()
+    const preview = screen.getByRole('region', { name: 'Parsed lines' })
+    expect(preview.querySelector('[aria-current="true"]')?.textContent).toContain('Python, Docker')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Remove My CV' }))
+
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'Resume line 2' })).toBeNull())
+    expect(screen.queryByText('Cited in the chat: Resume line 2.')).toBeNull()
   })
 })

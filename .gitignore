@@ -13,3 +13,6 @@ __pycache__/
 .env.*
 !.env.example
 data/
+
+# Eval run outputs
+apps/api/evals/results/

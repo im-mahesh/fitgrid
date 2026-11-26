@@ -38,7 +38,7 @@ def check(*results: ModelResult):
 def test_the_whole_resume_is_sent_with_todays_date_and_a_schema() -> None:
     client = FakeClaude(match_reply())
 
-    matching.match_requirements(client, "claude-opus-5-5", REQUIREMENTS, RESUME, TODAY)
+    matching.match_requirements(client, "claude-sonnet-5-5", REQUIREMENTS, RESUME, TODAY)
 
     [request] = client.requests
     message = request["messages"][0]["content"]
@@ -137,7 +137,9 @@ def test_every_requirement_gets_one_result_in_order() -> None:
 def test_the_call_is_recorded_as_its_own_stage() -> None:
     client = FakeClaude(match_reply(verdict(1, "met", [2]), verdict(2, "met", [42])))
 
-    _, record = matching.match_requirements(client, "claude-opus-5-5", REQUIREMENTS, RESUME, TODAY)
+    _, record = matching.match_requirements(
+        client, "claude-sonnet-5-5", REQUIREMENTS, RESUME, TODAY
+    )
 
     assert (record.stage, record.prompt_version, record.outcome) == ("match", "match-v1", "ok")
     assert record.rejected_items == 2  # the unsupported claim and the missing one

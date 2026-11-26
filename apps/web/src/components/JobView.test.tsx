@@ -37,8 +37,8 @@ interface Fake {
 }
 
 const extracted = (requirements = REQUIREMENTS) =>
-  json({ extracted: true, model: 'claude-opus-5-5', requirements })
-const matched = () => json({ matched: true, model: 'claude-opus-5-5', results: MATCHES })
+  json({ extracted: true, model: 'claude-sonnet-5-5', requirements })
+const matched = () => json({ matched: true, model: 'claude-sonnet-5-5', results: MATCHES })
 
 /** Fakes the API and returns a counter of billed (POST) calls per endpoint. */
 function fakeApi({ requirements = REQUIREMENTS, matches = null, extract, compare }: Fake = {}) {
@@ -50,7 +50,7 @@ function fakeApi({ requirements = REQUIREMENTS, matches = null, extract, compare
     }
     if (url.endsWith('/match')) {
       if (post) return (compare ?? matched)()
-      return json({ matched: matches !== null, model: 'claude-opus-5-5', results: matches ?? [] })
+      return json({ matched: matches !== null, model: 'claude-sonnet-5-5', results: matches ?? [] })
     }
     if (url.endsWith('/r1')) return json(document('r1', 'resume', RESUME_LINES))
     return json(document('j1', 'job', JOB_LINES))

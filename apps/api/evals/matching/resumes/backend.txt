@@ -1,0 +1,12 @@
+Nikhil Verma
+SKILLS
+Python, FastAPI, PostgreSQL, Docker, Git, Kubernetes (learning)
+EXPERIENCE
+Software Engineer, Orbit Retail, March 2022 - present
+- Build and run REST APIs in FastAPI that serve the checkout service.
+- Designed the PostgreSQL schema for orders and tuned slow queries in production.
+- Package services with Docker for the platform team to deploy.
+Junior Developer, Pinecone Labs, June 2021 - February 2022
+- Wrote Python scripts to clean supplier data.
+EDUCATION
+B.Sc. Information Technology, 2021

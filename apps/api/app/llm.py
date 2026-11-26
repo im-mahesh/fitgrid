@@ -6,6 +6,7 @@ Prompts and replies contain personal or untrusted text, so neither is logged.
 import logging
 import os
 import time
+from collections.abc import AsyncIterator, Callable
 from typing import Literal
 
 import anthropic
@@ -17,11 +18,15 @@ MAX_TOKENS = 16000  # thinking counts towards this, so leave room
 TIMEOUT_SECONDS = 150  # matching 40 requirements can take over a minute
 MAX_RETRIES = 1
 EFFORT = "medium"
+CHAT_EFFORT = "low"  # conversational answers: favour a quick first token
 # Lets the API retry a request on another model if a safety classifier declines it.
 FALLBACK_BETA = "server-side-fallback-2026-07-01"
-PRICE_PER_MILLION_TOKENS = {"claude-opus-5-5": (4.00, 20.00)}  # (input, output) in USD
+PRICE_PER_MILLION_TOKENS = {  # (input, output) in USD
+    "claude-opus-5-5": (4.00, 20.00),
+    "claude-sonnet-5-5": (2.00, 10.00),
+}
 
-Outcome = Literal["ok", "refusal", "truncated", "invalid_output", "api_error"]
+Outcome = Literal["ok", "refusal", "truncated", "invalid_output", "api_error", "cancelled"]
 
 
 class CallRecord(BaseModel):
@@ -46,10 +51,19 @@ class LLMError(Exception):
         self.record = record
 
 
-def get_client() -> anthropic.Anthropic:
+def _require_key() -> None:
     if not os.environ.get("ANTHROPIC_API_KEY"):
         raise LLMError("ANTHROPIC_API_KEY is not set. Add it to .env and restart the API.", 503)
+
+
+def get_client() -> anthropic.Anthropic:
+    _require_key()
     return anthropic.Anthropic(timeout=TIMEOUT_SECONDS, max_retries=MAX_RETRIES)
+
+
+def get_async_client() -> anthropic.AsyncAnthropic:
+    _require_key()
+    return anthropic.AsyncAnthropic(timeout=TIMEOUT_SECONDS, max_retries=MAX_RETRIES)
 
 
 def structured_call[T: BaseModel](
@@ -100,6 +114,59 @@ def structured_call[T: BaseModel](
         entry = record("invalid_output", response)
         raise LLMError("The model returned an unusable reply.", record=entry) from exc
     return parsed, record("ok", response)
+
+
+async def stream_text(
+    client: anthropic.AsyncAnthropic,
+    *,
+    model: str,
+    system: str,
+    messages: list[dict],
+    stage: str,
+    prompt_version: str,
+    on_record: Callable[[CallRecord], None],
+) -> AsyncIterator[str]:
+    """Yield the reply's text as it arrives; `on_record` gets the call's record however it ends.
+
+    Closing the iterator early (the reader went away) closes the connection,
+    which stops generation, and records the call as cancelled.
+    """
+    started = time.monotonic()
+    outcome: Outcome = "cancelled"
+    final = None
+    produced = False
+    try:
+        async with client.beta.messages.stream(
+            model=model,
+            max_tokens=MAX_TOKENS,
+            system=system,
+            messages=messages,
+            output_config={"effort": CHAT_EFFORT},
+            betas=[FALLBACK_BETA],
+            fallbacks="default",
+        ) as stream:
+            async for text in stream.text_stream:
+                produced = produced or bool(text.strip())
+                yield text
+            final = await stream.get_final_message()
+        if final.stop_reason == "refusal":
+            outcome = "refusal"
+            raise LLMError("The model declined to answer this.")
+        if final.stop_reason == "max_tokens":
+            outcome = "truncated"
+            raise LLMError("The answer was cut off.")
+        if not produced:
+            outcome = "invalid_output"
+            raise LLMError("The model returned an empty answer.")
+        outcome = "ok"
+    except anthropic.APIError as exc:
+        outcome = "api_error"
+        message, status = _describe(exc)
+        raise LLMError(message, status) from exc
+    finally:
+        record = _record(final, model, stage, prompt_version, outcome, started)
+        logger.info("llm_call %s", record.model_dump_json())
+        on_record(record)
 
 
 def _reply_text(response: object) -> str:

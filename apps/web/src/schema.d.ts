@@ -127,6 +127,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/chat": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Ask */
+        post: operations["ask_api_chat_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/health": {
         parameters: {
             query?: never;
@@ -164,6 +181,33 @@ export interface components {
             /** Text */
             text?: string | null;
         };
+        /** ChatMessage */
+        ChatMessage: {
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "user" | "assistant";
+            /** Content */
+            content: string;
+        };
+        /** ChatRequest */
+        ChatRequest: {
+            /** Question */
+            question: string;
+            /**
+             * History
+             * @default []
+             */
+            history: components["schemas"]["ChatMessage"][];
+            /** Focus Job Id */
+            focus_job_id?: string | null;
+        };
+        /**
+         * ChatStreamEvent
+         * @description Documents the stream's payloads in the OpenAPI schema.
+         */
+        ChatStreamEvent: components["schemas"]["SourcesEvent"] | components["schemas"]["TokenEvent"] | components["schemas"]["DoneEvent"] | components["schemas"]["ErrorEvent"];
         /** DatabaseStatus */
         DatabaseStatus: {
             /** Reachable */
@@ -226,6 +270,24 @@ export interface components {
              * Format: date-time
              */
             created_at: string;
+        };
+        /** DoneEvent */
+        DoneEvent: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "done";
+        };
+        /** ErrorEvent */
+        ErrorEvent: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "error";
+            /** Message */
+            message: string;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -321,6 +383,42 @@ export interface components {
              * @default []
              */
             requirements: components["schemas"]["Requirement"][];
+        };
+        /** Source */
+        Source: {
+            /** Ref */
+            ref: string;
+            /**
+             * Document Id
+             * Format: uuid
+             */
+            document_id: string;
+            /** Line Number */
+            line_number: number;
+            /** Text */
+            text: string;
+        };
+        /** SourcesEvent */
+        SourcesEvent: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "sources";
+            /** Jobs */
+            jobs: number[];
+            /** Sources */
+            sources: components["schemas"]["Source"][];
+        };
+        /** TokenEvent */
+        TokenEvent: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "token";
+            /** Text */
+            text: string;
         };
         /** ValidationError */
         ValidationError: {
@@ -648,6 +746,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Overview"];
+                };
+            };
+        };
+    };
+    ask_api_chat_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChatRequest"];
+            };
+        };
+        responses: {
+            /** @description Server-sent events */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": components["schemas"]["ChatStreamEvent"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

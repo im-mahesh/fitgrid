@@ -20,7 +20,7 @@ def item(text: str, lines: list[int]) -> ExtractedRequirement:
 
 
 def run(client: FakeClaude):
-    return extraction.extract_requirements(client, "claude-opus-5-5", LINES)
+    return extraction.extract_requirements(client, "claude-sonnet-5-5", LINES)
 
 
 # --- the request ---------------------------------------------------------------
@@ -32,7 +32,7 @@ def test_request_sends_numbered_lines_as_data_with_a_schema() -> None:
     run(client)
 
     [request] = client.requests
-    assert request["model"] == "claude-opus-5-5"
+    assert request["model"] == "claude-sonnet-5-5"
     assert request["messages"] == [
         {
             "role": "user",
@@ -104,7 +104,7 @@ def test_result_and_record_of_a_successful_call() -> None:
     assert record.outcome == "ok"
     assert (record.stage, record.prompt_version) == ("extract_requirements", "requirements-v1")
     assert (record.input_tokens, record.output_tokens, record.rejected_items) == (1000, 500, 1)
-    assert record.cost_usd == pytest.approx(0.014)  # 1000 * $4/M + 500 * $20/M
+    assert record.cost_usd == pytest.approx(0.007)  # 1000 * $2/M + 500 * $10/M
     assert record.request_id == "req_test"
 
 

@@ -1,0 +1,13 @@
+Grace Mwangi
+SUMMARY
+Former mathematics teacher moving into data work.
+EXPERIENCE
+Junior Data Analyst, Harbour Logistics, April 2025 - present
+- Write SQL to answer questions from the operations team.
+- Build weekly delivery dashboards in Tableau and walk managers through them.
+Mathematics Teacher, St. Anne's School, 2018 - 2025
+- Taught statistics and probability to final year students.
+- Presented results and plans to parents and the school board.
+EDUCATION
+B.Ed. Mathematics, 2018
+Data Analytics Bootcamp, 2024: Python, pandas, regression

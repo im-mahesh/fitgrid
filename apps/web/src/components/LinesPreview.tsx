@@ -8,10 +8,10 @@ function isHeading(line: Line): boolean {
 }
 
 const PARSING_HINT =
-  'This is what FitGrid read. Results will cite these line numbers, so check that they look right.'
+  'This is what the app read. Results will cite these line numbers, so check that they look right.'
 
 /**
- * The document as FitGrid read it. These line numbers are what later results
+ * The document as the app read it. These line numbers are what later results
  * cite, so the user should be able to see that the parsing is right.
  */
 export function LinesPreview({
@@ -39,7 +39,7 @@ export function LinesPreview({
 
   useEffect(() => {
     firstHighlighted.current?.scrollIntoView?.({ block: 'nearest', behavior: 'smooth' })
-  }, [highlighted])
+  }, [highlighted, document])
 
   if (error) return <p role="alert">{error}</p>
   if (!document) return <p>Loading…</p>

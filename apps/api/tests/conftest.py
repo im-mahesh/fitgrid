@@ -2,10 +2,11 @@ import os
 
 import psycopg
 import pytest
+from fake_embeddings import embed
 from fastapi.testclient import TestClient
 from psycopg.conninfo import conninfo_to_dict, make_conninfo
 
-from app import db
+from app import db, embeddings
 from app.main import app
 
 TEST_DATABASE_URL = os.environ.get(
@@ -42,3 +43,17 @@ def client(database_url: str, monkeypatch: pytest.MonkeyPatch) -> TestClient:
     with db.connect(database_url) as connection:
         connection.execute("TRUNCATE documents CASCADE")
     return TestClient(app)
+
+
+@pytest.fixture(autouse=True)
+def fake_embeddings(monkeypatch: pytest.MonkeyPatch) -> list[str]:
+    """No test loads the real model. Returns every passage that gets embedded."""
+    embedded: list[str] = []
+
+    def passages(texts: list[str]) -> list[list[float]]:
+        embedded.extend(texts)
+        return [embed(text) for text in texts]
+
+    monkeypatch.setattr(embeddings, "embed_passages", passages)
+    monkeypatch.setattr(embeddings, "embed_query", embed)
+    return embedded

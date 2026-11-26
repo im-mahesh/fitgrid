@@ -45,9 +45,10 @@ export function FitGrid() {
           : 'Add your resume to compare it with these jobs.'}
       </p>
       <div className={styles.grid}>
-        {overview.jobs.map((entry) => (
+        {overview.jobs.map((entry, index) => (
           <JobColumn
             key={entry.job.id}
+            number={index + 1}
             entry={entry}
             hasResume={overview.resume_id !== null}
             selected={cell?.jobId === entry.job.id ? cell.position : null}

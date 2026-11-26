@@ -8,7 +8,7 @@ from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from app import db, documents, llm, matches, overview, parsing, requirements, store
+from app import chat_api, db, documents, llm, matches, overview, parsing, requirements, store
 from app.config import get_settings
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
@@ -22,7 +22,7 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(
-    title="FitGrid API",
+    title="Career Intelligent System API",
     docs_url="/api/docs",
     openapi_url="/api/openapi.json",
     lifespan=lifespan,
@@ -31,6 +31,7 @@ app.include_router(documents.router)
 app.include_router(requirements.router)
 app.include_router(matches.router)
 app.include_router(overview.router)
+app.include_router(chat_api.router)
 
 
 def _error(status: int, message: str) -> JSONResponse:

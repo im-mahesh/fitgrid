@@ -5,6 +5,7 @@ import { VerdictBadge } from './VerdictBadge.tsx'
 import { summarize } from './verdicts.ts'
 
 interface JobColumnProps {
+  number: number // what "Job #2" refers to in the chat
   entry: JobOverview
   hasResume: boolean
   selected: number | null
@@ -27,7 +28,14 @@ function nextStep({ requirements, matches }: JobOverview, hasResume: boolean) {
   return null
 }
 
-export function JobColumn({ entry, hasResume, selected, onSelect, onChanged }: JobColumnProps) {
+export function JobColumn({
+  number,
+  entry,
+  hasResume,
+  selected,
+  onSelect,
+  onChanged,
+}: JobColumnProps) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const { job, requirements, matches } = entry
@@ -75,7 +83,10 @@ export function JobColumn({ entry, hasResume, selected, onSelect, onChanged }: J
 
   return (
     <article className={styles.column} aria-label={job.title}>
-      <h3 className={styles.title}>{job.title}</h3>
+      <h3 className={styles.title}>
+        <span className={styles.nice}>#{number}</span>{' '}
+        {job.title}
+      </h3>
       {requirements && matches && (
         <p className={styles.summary}>{summarize(requirements, matches)}</p>
       )}

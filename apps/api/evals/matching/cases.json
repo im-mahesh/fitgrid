@@ -1,0 +1,27 @@
+{
+  "as_of": "2026-11-01",
+  "cases": [
+    {"id": "backend", "resume": "backend.txt", "requirements": [
+      "Python programming", "5+ years of backend development", "PostgreSQL in production",
+      "Kubernetes in production", "Docker", "Degree in Computer Science or equivalent",
+      "Designing REST APIs", "Go programming"]},
+    {"id": "data", "resume": "data.txt", "requirements": [
+      "6+ years of data engineering experience", "Apache Spark", "Running Kafka in production",
+      "Workflow orchestration with Airflow or similar", "Experience with AWS", "Snowflake",
+      "Data modelling", "Mentoring other engineers"]},
+    {"id": "frontend", "resume": "frontend.txt", "requirements": [
+      "3+ years of React", "TypeScript", "Next.js", "Building accessible interfaces",
+      "Automated testing of UI code", "GraphQL", "Setting up CI/CD", "Vue or Angular"]},
+    {"id": "analyst", "resume": "analyst.txt", "requirements": [
+      "SQL", "Python for data analysis", "A data visualisation tool", "Statistics",
+      "Explaining findings to non-technical stakeholders", "Power BI", "A bachelor's degree",
+      "2+ years working as a data analyst"]},
+    {"id": "devops", "resume": "devops.txt", "requirements": [
+      "Administering Kubernetes clusters", "Infrastructure as code with Terraform",
+      "Building CI/CD pipelines", "Monitoring and alerting", "On-call experience",
+      "A current AWS certification", "Linux administration", "Scripting in Bash or Python"]},
+    {"id": "keywords", "resume": "keywords.txt", "requirements": [
+      "3+ years of Java", "Rust", "Spring Boot", "Kafka", "Kubernetes",
+      "Designing microservices", "MySQL or PostgreSQL", "Leading a team"]}
+  ]
+}

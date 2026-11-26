@@ -1,0 +1,12 @@
+Farah Siddiqui
+SUMMARY
+Data engineer who likes boring, reliable pipelines.
+EXPERIENCE
+Data Engineer, Meridian Health, January 2021 - December 2024
+- Built nightly Spark jobs on AWS Glue that load claims data into a warehouse.
+- Scheduled and monitored pipelines with Airflow.
+- Reviewed pull requests and paired weekly with two new joiners.
+Data Engineer (part time contract), Kestrel Analytics, January 2019 - December 2022
+- Modelled star schemas in Amazon Redshift for sales reporting.
+SKILLS
+Python, SQL, Spark, Airflow, Kafka, AWS
